@@ -10,6 +10,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.fields import IntegerField, SerializerMethodField
 from rest_framework.relations import PrimaryKeyRelatedField
 from rest_framework.serializers import ModelSerializer
+
 from users.models import Subscribe
 
 User = get_user_model()
@@ -50,7 +51,8 @@ class SubscribeSerializer(CustomUserSerializer):
     recipes = SerializerMethodField()
 
     class Meta(CustomUserSerializer.Meta):
-        fields = CustomUserSerializer.Meta.fields + ("recipes_count", "recipes")
+        fields = CustomUserSerializer.Meta.fields + \
+            ("recipes_count", "recipes")
         read_only_fields = ("email", "username")
 
     def validate(self, data):
@@ -119,7 +121,10 @@ class RecipeReadSerializer(ModelSerializer):
     def get_ingredients(self, obj):
         recipe = obj
         ingredients = recipe.ingredients.values(
-            "id", "name", "measurement_unit", amount=F("recipeingredient__amount")
+            "id",
+            "name",
+            "measurement_unit",
+            amount=F("recipeingredient__amount")
         )
         return ingredients
 
@@ -166,7 +171,8 @@ class RecipeWriteSerializer(ModelSerializer):
     def validate_ingredients(self, value):
         ingredients = value
         if not ingredients:
-            raise ValidationError({"ingredients": "Нужен хотя бы один ингредиент!"})
+            raise ValidationError(
+                {"ingredients": "Нужен хотя бы один ингредиент!"})
         ingredients_list = []
         for item in ingredients:
             ingredient = get_object_or_404(Ingredient, id=item["id"])
@@ -188,7 +194,8 @@ class RecipeWriteSerializer(ModelSerializer):
         tags_list = []
         for tag in tags:
             if tag in tags_list:
-                raise ValidationError({"tags": "Теги должны быть уникальными!"})
+                raise ValidationError(
+                    {"tags": "Теги должны быть уникальными!"})
             tags_list.append(tag)
         return value
 
@@ -197,7 +204,8 @@ class RecipeWriteSerializer(ModelSerializer):
         RecipeIngredient.objects.bulk_create(
             [
                 RecipeIngredient(
-                    ingredient=Ingredient.objects.filter(id=ingredient["id"].first()),
+                    ingredient=Ingredient.objects.filter(
+                        id=ingredient["id"].first()),
                     recipe=recipe,
                     amount=ingredient["amount"],
                 )
@@ -222,7 +230,8 @@ class RecipeWriteSerializer(ModelSerializer):
         instance.tags.clear()
         instance.tags.set(tags)
         instance.ingredients.clear()
-        self.create_ingredients_amounts(recipe=instance, ingredients=ingredients)
+        self.create_ingredients_amounts(
+            recipe=instance, ingredients=ingredients)
         instance.save()
         return instance
 

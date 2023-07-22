@@ -3,13 +3,15 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
+load_dotenv()
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = "django-insecure-5*vqu0v(4!%y8n(@z1sn2jkykh5c^gbnc5pg-*mvy1#4-xb7gw"
+SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-123")
 
-DEBUG = True
+DEBUG = os.getenv("DEBUG", default=True) == "True"
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["mykittyapp.sytes.net", "localhost", "127.0.0.1"]
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -18,12 +20,10 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-
     "rest_framework",
     "rest_framework.authtoken",
     "djoser",
     "django_filters",
-    
     "api.apps.ApiConfig",
     "recipes.apps.RecipesConfig",
     "users.apps.UsersConfig",
@@ -59,14 +59,16 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "foodgram.wsgi.application"
 
-
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.getenv("POSTGRES_DB", "django"),
+        "USER": os.getenv("POSTGRES_USER", "django"),
+        "PASSWORD": os.getenv("POSTGRES_PASSWORD", ""),
+        "HOST": os.getenv("DB_HOST", ""),
+        "PORT": os.getenv("DB_PORT", 5432),
     }
 }
-
 
 AUTH_USER_MODEL = "users.User"
 
