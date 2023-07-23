@@ -1,5 +1,3 @@
-from api.serializers import CustomUserSerializer, SubscribeSerializer
-from api.utils import CustomPagination
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet
@@ -8,6 +6,8 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
+from api.serializers import CustomUserSerializer, SubscribeSerializer
+from recipes.utils import StandardResultsSetPagination
 from .models import Subscribe
 
 User = get_user_model()
@@ -16,7 +16,7 @@ User = get_user_model()
 class CustomUserViewSet(UserViewSet):
     queryset = User.objects.all()
     serializer_class = CustomUserSerializer
-    pagination_class = CustomPagination
+    pagination_class = StandardResultsSetPagination
 
     @action(
         detail=True,
