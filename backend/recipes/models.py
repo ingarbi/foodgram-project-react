@@ -45,13 +45,13 @@ class Tag(models.Model):
 
 
 class Recipe(models.Model):
-    name = models.CharField("Название рецепта", max_length=200)
     author = models.ForeignKey(
         User,
         related_name="recipes",
         on_delete=models.CASCADE,
         verbose_name="Автор рецепта",
     )
+    name = models.CharField("Название рецепта", max_length=200)
     text = models.TextField("Описание рецепта")
     image = models.ImageField("Изображение рецепта", upload_to="recipes/")
     cooking_time = models.PositiveSmallIntegerField(
@@ -67,7 +67,6 @@ class Recipe(models.Model):
     )
     tags = models.ManyToManyField(
         Tag, related_name="recipes", verbose_name="Теги")
-    pub_date = models.DateTimeField("Дата публикации", auto_now_add=True)
 
     class Meta:
         ordering = ["-id"]
@@ -82,13 +81,11 @@ class RecipeIngredient(models.Model):
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
-        related_name="recipe",
         verbose_name="Рецепт",
     )
     ingredient = models.ForeignKey(
         Ingredient,
         on_delete=models.CASCADE,
-        related_name="ingredient",
         verbose_name="Ингредиент",
     )
     amount = models.PositiveSmallIntegerField(
@@ -105,7 +102,8 @@ class RecipeIngredient(models.Model):
         ordering = ["-id"]
         constraints = [
             models.UniqueConstraint(
-                fields=["recipe", "ingredient"], name="unique ingredient"
+                fields=["recipe", "ingredient"],
+                name="unique ingredient"
             )
         ]
 

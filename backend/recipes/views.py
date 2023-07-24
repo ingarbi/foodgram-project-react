@@ -13,11 +13,19 @@ from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
 from api.filters import IngredientFilter, RecipeFilter
 from api.permissions import IsAdminOrReadOnly, IsAuthorOrReadOnly
-from api.serializers import (IngredientSerializer, RecipeReadSerializer,
-                          RecipeMainSerializer, RecipeWriteSerializer,
-                          TagSerializer)
-from .models import (Favourite, Ingredient, Recipe, RecipeIngredient,
-                            ShoppingCart, Tag)
+from api.serializers import (
+    IngredientSerializer,
+    RecipeReadSerializer,
+    RecipeMainSerializer,
+    RecipeWriteSerializer,
+    TagSerializer)
+from .models import (
+    Favourite,
+    Ingredient,
+    Recipe,
+    RecipeIngredient,
+    ShoppingCart,
+    Tag)
 from .utils import StandardResultsSetPagination
 
 

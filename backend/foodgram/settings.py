@@ -11,7 +11,7 @@ SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-123")
 
 DEBUG = os.getenv("DEBUG", default=True) == "True"
 
-ALLOWED_HOSTS = ["mykittyapp.sytes.net", "localhost", "127.0.0.1"]
+ALLOWED_HOSTS = ["mykittyapp.sytes.net", "localhost", "127.0.0.1", 'backend']
 
 INSTALLED_APPS = [
     "django.contrib.admin",
