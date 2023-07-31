@@ -24,6 +24,8 @@ INSTALLED_APPS = [
     "rest_framework.authtoken",
     "djoser",
     "django_filters",
+    "colorfield",
+
     "api.apps.ApiConfig",
     "recipes.apps.RecipesConfig",
     "users.apps.UsersConfig",
@@ -94,7 +96,7 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticatedOrReadOnly",
     ],
-    'DEFAULT_PAGINATION_CLASS': 'recipes.utils.StandardResultsSetPagination'
+    'DEFAULT_PAGINATION_CLASS': 'recipes.pagination.StandardResultsSetPagination'
 }
 
 DJOSER = {
@@ -112,7 +114,7 @@ DJOSER = {
 
 LANGUAGE_CODE = "ru-ru"
 
-TIME_ZONE = "UTC"
+TIME_ZONE = "Europe/Moscow"
 
 USE_I18N = True
 

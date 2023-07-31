@@ -30,5 +30,5 @@ class Command(BaseCommand):
                 self.stdout.write(self.style.ERROR('No data loaded.'))
         except FileNotFoundError:
             self.stdout.write(
-                self.style.ERROR('File not found. \
-                                Please provide a valid file path.'))
+                self.style.ERROR('Not found.Please provide a valid file path.')
+            )

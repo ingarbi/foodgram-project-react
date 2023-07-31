@@ -31,5 +31,5 @@ class Command(BaseCommand):
                 )
         except FileNotFoundError:
             self.stdout.write(
-                self.style.ERROR('File not found. \
-                                Please provide a valid file path.'))
+                self.style.ERROR('Not found.Please provide a valid file path.')
+            )

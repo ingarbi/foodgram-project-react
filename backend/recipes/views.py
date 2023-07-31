@@ -20,13 +20,13 @@ from api.serializers import (
     RecipeWriteSerializer,
     TagSerializer)
 from .models import (
-    Favourite,
+    Favourites,
     Ingredient,
     Recipe,
     RecipeIngredient,
     ShoppingCart,
     Tag)
-from .utils import StandardResultsSetPagination
+from .pagination import StandardResultsSetPagination
 
 
 class IngredientViewSet(ReadOnlyModelViewSet):
@@ -65,9 +65,9 @@ class RecipeViewSet(ModelViewSet):
     )
     def favorite(self, request, pk):
         if request.method == "POST":
-            return self.add_to(Favourite, request.user, pk)
+            return self.add_to(Favourites, request.user, pk)
         else:
-            return self.delete_from(Favourite, request.user, pk)
+            return self.delete_from(Favourites, request.user, pk)
 
     @action(
         detail=True,

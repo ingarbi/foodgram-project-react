@@ -1,4 +1,3 @@
-from django.contrib.auth import get_user_model
 from django.db import transaction
 from django.db.models import F
 from django.shortcuts import get_object_or_404
@@ -10,17 +9,9 @@ from rest_framework.fields import IntegerField, SerializerMethodField
 from rest_framework.relations import PrimaryKeyRelatedField
 from rest_framework.serializers import ModelSerializer
 
+from foodgram.constants import MIN_COOKING_TIME
 from recipes.models import Ingredient, Recipe, RecipeIngredient, Tag
-from users.models import Subscribe
-
-User = get_user_model()
-
-
-def get_current_user(request):
-    user = None
-    if request and hasattr(request, "user"):
-        user = request.user
-    return user
+from users.models import Subscribe, User
 
 
 class CustomUserSerializer(UserSerializer):
@@ -38,7 +29,7 @@ class CustomUserSerializer(UserSerializer):
         )
 
     def get_is_subscribed(self, obj):
-        current_user = get_current_user(self.context.get("request"))
+        current_user = self.context.get('request').user
         if current_user.is_anonymous:
             return False
         return Subscribe.objects.filter(user=current_user, author=obj).exists()
@@ -61,13 +52,14 @@ class SubscribeSerializer(CustomUserSerializer):
     recipes = SerializerMethodField()
 
     class Meta(CustomUserSerializer.Meta):
-        fields = CustomUserSerializer.Meta.fields + \
-            ("recipes_count", "recipes")
+        fields = CustomUserSerializer.Meta.fields + (
+            "recipes_count", "recipes"
+        )
         read_only_fields = ("email", "username")
 
     def validate(self, data):
         subscription_author = self.instance
-        current_user = get_current_user(self.context.get("request"))
+        current_user = self.context.get('request').user
 
         if Subscribe.objects.filter(author=subscription_author,
                                     user=current_user).exists():
@@ -88,9 +80,8 @@ class SubscribeSerializer(CustomUserSerializer):
 
     def get_recipes(self, obj):
         request = self.context.get("request")
-        limit = request.GET.get("recipes_limit")
-        recipes = obj.recipes.all()[:int(limit)] \
-            if limit else obj.recipes.all()
+        lmt = request.GET.get("recipes_limit")
+        recipes = obj.recipes.all()[:int(lmt)] if lmt else obj.recipes.all()
         serializer = RecipeMainSerializer(recipes, many=True, read_only=True)
         return serializer.data
 
@@ -98,13 +89,13 @@ class SubscribeSerializer(CustomUserSerializer):
 class IngredientSerializer(ModelSerializer):
     class Meta:
         model = Ingredient
-        fields = "__all__"
+        fields = ("id", "name", "measurement_unit")
 
 
 class TagSerializer(ModelSerializer):
     class Meta:
         model = Tag
-        fields = "__all__"
+        fields = ("id", "name", "color", "slug")
 
 
 class RecipeReadSerializer(ModelSerializer):
@@ -213,8 +204,13 @@ class RecipeWriteSerializer(ModelSerializer):
                     {"tags": "Теги должны быть уникальными!"}
                 )
             tags_list.add(tag)
-
         return data
+
+    def validate_cooking_time(self, cooking_time):
+        if int(cooking_time) < MIN_COOKING_TIME:
+            raise ValidationError(
+                "Время приготовления >= 1!")
+        return cooking_time
 
     @transaction.atomic
     def create_ingredients_amounts(self, ingredients, recipe):

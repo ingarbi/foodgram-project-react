@@ -1,6 +1,9 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.db.models import UniqueConstraint
+from rest_framework.exceptions import ValidationError
+
+from foodgram.constants import EMAIL_LENGTH
 
 
 class User(AbstractUser):
@@ -11,13 +14,13 @@ class User(AbstractUser):
         "last_name",
     ]
     email = models.EmailField(
-        "email address",
-        max_length=254,
+        verbose_name="email address",
+        max_length=EMAIL_LENGTH,
         unique=True,
     )
 
     class Meta:
-        ordering = ["id"]
+        ordering = ("username", "email")
         verbose_name = "Пользователь"
         verbose_name_plural = "Пользователи"
 
@@ -40,7 +43,7 @@ class Subscribe(models.Model):
     )
 
     class Meta:
-        ordering = ["-id"]
+        ordering = ("user", "author")
         constraints = [
             UniqueConstraint(
                 fields=["user", "author"],
@@ -49,3 +52,10 @@ class Subscribe(models.Model):
         ]
         verbose_name = "Подписка"
         verbose_name_plural = "Подписки"
+
+        def __str__(self):
+            return f"{self.user} подписан на {self.author}"
+
+        def clean(self):
+            if self.user == self.author:
+                raise ValidationError("Нельзя подписаться на себя")
