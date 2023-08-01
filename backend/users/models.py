@@ -3,7 +3,7 @@ from django.db import models
 from django.db.models import UniqueConstraint
 from rest_framework.exceptions import ValidationError
 
-from foodgram.constants import EMAIL_LENGTH
+from api.constants import EMAIL_LENGTH
 
 
 class User(AbstractUser):
@@ -53,9 +53,9 @@ class Subscribe(models.Model):
         verbose_name = "Подписка"
         verbose_name_plural = "Подписки"
 
-        def __str__(self):
-            return f"{self.user} подписан на {self.author}"
+    def __str__(self):
+        return f"{self.user} подписан на {self.author}"
 
-        def clean(self):
-            if self.user == self.author:
-                raise ValidationError("Нельзя подписаться на себя")
+    def clean(self):
+        if self.user == self.author:
+            raise ValidationError("Нельзя подписаться на себя")

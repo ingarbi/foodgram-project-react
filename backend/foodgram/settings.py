@@ -96,7 +96,7 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticatedOrReadOnly",
     ],
-    'DEFAULT_PAGINATION_CLASS': 'recipes.pagination.StandardResultsSetPagination'
+    "DEFAULT_PAGINATION_CLASS": "api.pagination.StandardResultsSetPagination"
 }
 
 DJOSER = {

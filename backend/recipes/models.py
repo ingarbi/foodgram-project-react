@@ -3,8 +3,8 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import UniqueConstraint
 
-from foodgram.constants import (HEX_LENGHT, MAX_COOKING_TIME, MAX_INGREDIENTS,
-                                MAX_LENGTH, MIN_COOKING_TIME, MIN_INGREDIENTS)
+from api.constants import (HEX_LENGHT, MAX_COOKING_TIME, MAX_INGREDIENTS,
+                           MAX_LENGTH, MIN_COOKING_TIME, MIN_INGREDIENTS)
 from users.models import User
 
 
