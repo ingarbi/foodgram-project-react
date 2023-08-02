@@ -1,4 +1,3 @@
-from django.db import transaction
 from django.db.models import F
 from django.shortcuts import get_object_or_404
 from djoser.serializers import UserCreateSerializer, UserSerializer
@@ -227,6 +226,7 @@ class RecipeWriteSerializer(ModelSerializer):
         recipe = Recipe.objects.create(**validated_data)
         recipe.tags.set(tags)
         self.create_ingredients_amounts(recipe=recipe, ingredients=ingredients)
+        recipe.save()
         return recipe
 
     def update(self, instance, validated_data):
