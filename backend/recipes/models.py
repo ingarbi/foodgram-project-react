@@ -104,13 +104,13 @@ class Recipe(models.Model):
 
     def __str__(self):
         return self.name
-    
-    @receiver(post_save, sender="Recipe")
-    def recipe_post_save(sender, instance, created, **kwargs):
-        if created:
-            user = instance.author
-            Favourites.objects.create(user=user, recipe=instance)
-            ShoppingCart.objects.create(user=user, recipe=instance)
+
+@receiver(post_save, sender=Recipe)
+def recipe_post_save(sender, instance, created, **kwargs):
+    if created:
+        user = instance.author
+        Favourites.objects.create(user=user, recipe=instance)
+        ShoppingCart.objects.create(user=user, recipe=instance)
 
 
 class RecipeIngredient(models.Model):
