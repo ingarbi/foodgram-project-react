@@ -2,6 +2,8 @@ from colorfield.fields import ColorField
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import UniqueConstraint
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 from api.constants import (HEX_LENGHT, MAX_COOKING_TIME, MAX_INGREDIENTS,
                            MAX_LENGTH, MIN_COOKING_TIME, MIN_INGREDIENTS)
@@ -102,6 +104,13 @@ class Recipe(models.Model):
 
     def __str__(self):
         return self.name
+    
+    @receiver(post_save, sender="Recipe")
+    def recipe_post_save(sender, instance, created, **kwargs):
+        if created:
+            user = instance.author
+            Favourites.objects.create(user=user, recipe=instance)
+            ShoppingCart.objects.create(user=user, recipe=instance)
 
 
 class RecipeIngredient(models.Model):
