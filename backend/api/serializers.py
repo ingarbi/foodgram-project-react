@@ -232,12 +232,11 @@ class RecipeWriteSerializer(ModelSerializer):
         recipe.tags.set(tags)
         for ingredient_data in ingredients:
             ingredient = Ingredient.objects.get(id=ingredient_data["id"])
-            recipe_ingredient = RecipeIngredient(
-                ingredient=ingredient,
-                recipe=recipe,
-                amount=ingredient_data["amount"],
-            )
-            recipe_ingredient.save()
+            recipe_ingredient_data = {
+                "ingredient": ingredient.id,
+                "amount": ingredient_data["amount"],
+            }
+            recipe_ingredient = RecipeIngredient.objects.create(**recipe_ingredient_data)
         return recipe
 
     @transaction.atomic
