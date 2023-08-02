@@ -17,6 +17,7 @@ services:
 
   backend:
     image: ingarbi/foodgram-backend
+    container_name: foodgram-backend
     env_file: .env
     depends_on:
       - db
