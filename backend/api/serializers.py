@@ -212,7 +212,6 @@ class RecipeWriteSerializer(ModelSerializer):
                 "Время приготовления >= 1!")
         return cooking_time
 
-    @transaction.atomic
     def create_ingredients_amounts(self, ingredients, recipe):
         recipe_ingredients = [
             RecipeIngredient(
@@ -224,22 +223,14 @@ class RecipeWriteSerializer(ModelSerializer):
         ]
         RecipeIngredient.objects.bulk_create(recipe_ingredients)
 
-    @transaction.atomic
     def create(self, validated_data):
         tags = validated_data.pop("tags")
         ingredients = validated_data.pop("ingredients")
         recipe = Recipe.objects.create(**validated_data)
         recipe.tags.set(tags)
-        for ingredient_data in ingredients:
-            ingredient = Ingredient.objects.get(id=ingredient_data["id"])
-            recipe_ingredient_data = {
-                "ingredient": ingredient.id,
-                "amount": ingredient_data["amount"],
-            }
-            recipe_ingredient = RecipeIngredient.objects.create(**recipe_ingredient_data)
+        self.create_ingredients_amounts(recipe=recipe, ingredients=ingredients)
         return recipe
 
-    @transaction.atomic
     def update(self, instance, validated_data):
         tags = validated_data.pop("tags")
         ingredients = validated_data.pop("ingredients")
