@@ -1,4 +1,3 @@
-from django.db import transaction
 from django.db.models import F
 from django.shortcuts import get_object_or_404
 from djoser.serializers import UserCreateSerializer, UserSerializer
@@ -171,78 +170,76 @@ class RecipeWriteSerializer(ModelSerializer):
             "cooking_time",
         )
 
+    def validate(self, data):
+        ingredients = data.get("ingredients")
+        tags = data.get("tags")
 
-    def validate_ingredients(self, value):
-        ingredients = value
         if not ingredients:
-            raise ValidationError({
-                'ingredients': 'Нужен хотя бы один ингредиент!'
-            })
-        ingredients_list = []
-        for item in ingredients:
-            ingredient = get_object_or_404(Ingredient, id=item['id'])
-            if ingredient in ingredients_list:
-                raise ValidationError({
-                    'ingredients': 'Ингридиенты не могут повторяться!'
-                })
-            if int(item['amount']) <= 0:
-                raise ValidationError({
-                    'amount': 'Количество ингредиента должно быть больше 0!'
-                })
-            ingredients_list.append(ingredient)
-        return value
-
-    def validate_tags(self, value):
-        tags = value
+            raise ValidationError(
+                {"ingredients": "Нужен хотя бы один ингредиент!"}
+            )
         if not tags:
-            raise ValidationError({
-                'tags': 'Нужно выбрать хотя бы один тег!'
-            })
-        tags_list = []
+            raise ValidationError(
+                {"tags": "Нужно выбрать хотя бы один тег!"}
+            )
+
+        ingredients_list = []
+        tags_list = set()
+        for item in ingredients:
+            ingredient = get_object_or_404(Ingredient, id=item["id"])
+            if ingredient in ingredients_list:
+                raise ValidationError(
+                    {"ingredients": "Ингридиенты не могут повторяться!"}
+                )
+            if int(item["amount"]) <= 0:
+                raise ValidationError(
+                    {"amount": "Количество ингредиента должно быть больше 0!"}
+                )
+            ingredients_list.append(ingredient)
+
         for tag in tags:
             if tag in tags_list:
-                raise ValidationError({
-                    'tags': 'Теги должны быть уникальными!'
-                })
-            tags_list.append(tag)
-        return value
-    
+                raise ValidationError(
+                    {"tags": "Теги должны быть уникальными.!"}
+                )
+            tags_list.add(tag)
+        return data
+
     def validate_cooking_time(self, cooking_time):
         if int(cooking_time) < MIN_COOKING_TIME:
             raise ValidationError(
                 "Время приготовления >= 1!")
         return cooking_time
 
-    @transaction.atomic
     def create_ingredients_amounts(self, ingredients, recipe):
-        RecipeIngredient.objects.bulk_create(
-            [RecipeIngredient(
-                ingredient=Ingredient.objects.get(id=ingredient['id']),
-                recipe=recipe,
-                amount=ingredient['amount']
-            ) for ingredient in ingredients]
-        )
+        recipe_ingredients = []
+        for ingredient in ingredients:
+            recipe_ingredients.append(
+                RecipeIngredient(
+                    ingredient=Ingredient.objects.get(id=ingredient['id']),
+                    recipe=recipe,
+                    amount=ingredient['amount']
+                )
+            )
+        RecipeIngredient.objects.bulk_create(recipe_ingredients)
 
-    @transaction.atomic
     def create(self, validated_data):
-        tags = validated_data.pop('tags')
-        ingredients = validated_data.pop('ingredients')
+        tags = validated_data.pop("tags")
+        ingredients = validated_data.pop("ingredients")
         recipe = Recipe.objects.create(**validated_data)
+        self.create_ingredients_amounts(recipe=recipe, ingredients=ingredients)
         recipe.tags.set(tags)
-        self.create_ingredients_amounts(recipe=recipe,
-                                        ingredients=ingredients)
         return recipe
 
-    @transaction.atomic
     def update(self, instance, validated_data):
-        tags = validated_data.pop('tags')
-        ingredients = validated_data.pop('ingredients')
+        tags = validated_data.pop("tags")
+        ingredients = validated_data.pop("ingredients")
         instance = super().update(instance, validated_data)
         instance.tags.clear()
         instance.tags.set(tags)
         instance.ingredients.clear()
-        self.create_ingredients_amounts(recipe=instance,
-                                        ingredients=ingredients)
+        self.create_ingredients_amounts(
+            recipe=instance, ingredients=ingredients)
         instance.save()
         return instance
 
