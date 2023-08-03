@@ -18,7 +18,7 @@ class RecipeAdmin(admin.ModelAdmin):
         "id",
         "author",
         "added_in_favorites",
-        "get_ingredients"
+        # "get_ingredients"
     )
     readonly_fields = ("added_in_favorites",)
     list_filter = (
@@ -28,25 +28,25 @@ class RecipeAdmin(admin.ModelAdmin):
     )
     inlines = (RecipeIngredientAdmin,)
 
-    def save_model(self, request, obj, form, change):
-        if not obj.ingredients.exists() or not obj.tags.exists():
-            raise ValidationError(
-                "Добавьте хотя бы по одному ингредиента и тэга"
-            )
-        super().save_model(request, obj, form, change)
+    # def save_model(self, request, obj, form, change):
+    #     if not obj.ingredients.exists() or not obj.tags.exists():
+    #         raise ValidationError(
+    #             "Добавьте хотя бы по одному ингредиента и тэга"
+    #         )
+    #     super().save_model(request, obj, form, change)
 
     @display(description="Количество в избранных")
     def added_in_favorites(self, obj):
         return obj.favorites.count()
 
-    @display(description="Ингредиенты")
-    def get_ingredients(self, obj):
-        return '\n '.join([
-            f'{item["ingredient__name"]} - {item["amount"]}'
-            f' {item["ingredient__measurement_unit"]}.'
-            for item in obj.recipe.values(
-                "ingredient__name",
-                "amount", "ingredient__measurement_unit")])
+    # @display(description="Ингредиенты")
+    # def get_ingredients(self, obj):
+    #     return '\n '.join([
+    #         f'{item["ingredient__name"]} - {item["amount"]}'
+    #         f' {item["ingredient__measurement_unit"]}.'
+    #         for item in obj.recipe.values(
+    #             "ingredient__name",
+    #             "amount", "ingredient__measurement_unit")])
 
 
 @admin.register(Ingredient)
