@@ -5,7 +5,7 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
-from recipes.models import (Favourites, Ingredient, Recipe, RecipeIngredient,
+from recipes.models import (Favourite, Ingredient, Recipe, RecipeIngredient,
                             ShoppingCart, Tag)
 from rest_framework import status
 from rest_framework.decorators import action
@@ -60,9 +60,9 @@ class RecipeViewSet(ModelViewSet):
     )
     def favorite(self, request, pk):
         if request.method == "POST":
-            return self.add_to(Favourites, request.user, pk)
+            return self.add_to(Favourite, request.user, pk)
         else:
-            return self.delete_from(Favourites, request.user, pk)
+            return self.delete_from(Favourite, request.user, pk)
 
     @action(
         detail=True,

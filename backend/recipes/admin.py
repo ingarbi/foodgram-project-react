@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.admin import display
 from rest_framework.exceptions import ValidationError
 
-from .models import (Favourites, Ingredient, Recipe, RecipeIngredient,
+from .models import (Favourite, Ingredient, Recipe, RecipeIngredient,
                      ShoppingCart, Tag)
 
 
@@ -77,7 +77,7 @@ class ShoppingCartAdmin(admin.ModelAdmin):
     )
 
 
-@admin.register(Favourites)
+@admin.register(Favourite)
 class FavouriteAdmin(admin.ModelAdmin):
     list_display = (
         "user",
