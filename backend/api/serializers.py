@@ -216,7 +216,7 @@ class RecipeWriteSerializer(ModelSerializer):
         for ingredient in ingredients:
             recipe_ingredients.append(
                 RecipeIngredient(
-                    ingredient=Ingredient.objects.get(ingredient['id']),
+                    ingredient=Ingredient.objects.get(id=ingredient['id']),
                     recipe=recipe,
                     amount=ingredient['amount']
                 )
@@ -227,9 +227,8 @@ class RecipeWriteSerializer(ModelSerializer):
         tags = validated_data.pop("tags")
         ingredients = validated_data.pop("ingredients")
         recipe = Recipe.objects.create(**validated_data)
-        recipe.tags.set(tags)
         self.create_ingredients_amounts(recipe=recipe, ingredients=ingredients)
-        recipe.save()
+        recipe.tags.set(tags)
         return recipe
 
     def update(self, instance, validated_data):
