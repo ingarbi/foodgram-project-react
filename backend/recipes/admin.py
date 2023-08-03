@@ -28,12 +28,12 @@ class RecipeAdmin(admin.ModelAdmin):
     )
     inlines = (RecipeIngredientAdmin,)
 
-    def save_model(self, request, obj, form, change):
-        if not obj.ingredients.exists() or not obj.tags.exists():
-            raise ValidationError(
-                "Добавьте хотя бы по одному ингредиента и тэга"
-            )
-        super().save_model(request, obj, form, change)
+    # def save_model(self, request, obj, form, change):
+    #     if not obj.ingredients.exists() or not obj.tags.exists():
+    #         raise ValidationError(
+    #             "Добавьте хотя бы по одному ингредиента и тэга"
+    #         )
+    #     super().save_model(request, obj, form, change)
 
     @display(description="Количество в избранных")
     def added_in_favorites(self, obj):
