@@ -2,13 +2,16 @@ from django.contrib import admin
 from django.contrib.admin import display
 from rest_framework.exceptions import ValidationError
 
+from api.constants import MIN_NUMBER
 from .models import (Favourite, Ingredient, Recipe, RecipeIngredient,
                      ShoppingCart, Tag)
 
 
-class RecipeIngredientAdmin(admin.StackedInline):
+class RecipeIngredientAdmin(admin.TabularInline):
     model = RecipeIngredient
-    autocomplete_fields = ('ingredient',)
+    min_num = MIN_NUMBER
+    validate_min = True
+    extra = MIN_NUMBER
 
 
 @admin.register(Recipe)
@@ -29,7 +32,7 @@ class RecipeAdmin(admin.ModelAdmin):
     inlines = (RecipeIngredientAdmin,)
 
     # def save_model(self, request, obj, form, change):
-    #     if not obj.ingredients.exists() or not obj.tags.exists():
+    #     if not obj.ingredients.exists():
     #         raise ValidationError(
     #             "Добавьте хотя бы по одному ингредиента и тэга"
     #         )
