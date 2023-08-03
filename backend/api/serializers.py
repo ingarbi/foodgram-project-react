@@ -170,40 +170,40 @@ class RecipeWriteSerializer(ModelSerializer):
             "cooking_time",
         )
 
-    def validate(self, data):
-        ingredients = data.get("ingredients")
-        tags = data.get("tags")
-
+    def validate_ingredients(self, value):
+        ingredients = value
         if not ingredients:
-            raise ValidationError(
-                {"ingredients": "Нужен хотя бы один ингредиент!"}
-            )
-        if not tags:
-            raise ValidationError(
-                {"tags": "Нужно выбрать хотя бы один тег!"}
-            )
-
+            raise ValidationError({
+                'ingredients': 'Нужен хотя бы один ингредиент!'
+            })
         ingredients_list = []
-        tags_list = set()
         for item in ingredients:
-            ingredient = get_object_or_404(Ingredient, id=item["id"])
+            ingredient = get_object_or_404(Ingredient, id=item['id'])
             if ingredient in ingredients_list:
-                raise ValidationError(
-                    {"ingredients": "Ингридиенты не могут повторяться!"}
-                )
-            if int(item["amount"]) <= 0:
-                raise ValidationError(
-                    {"amount": "Количество ингредиента должно быть больше 0!"}
-                )
+                raise ValidationError({
+                    'ingredients': 'Ингридиенты не могут повторяться!'
+                })
+            if int(item['amount']) <= 0:
+                raise ValidationError({
+                    'amount': 'Количество ингредиента должно быть больше 0!'
+                })
             ingredients_list.append(ingredient)
+        return value
 
+    def validate_tags(self, value):
+        tags = value
+        if not tags:
+            raise ValidationError({
+                'tags': 'Нужно выбрать хотя бы один тег!'
+            })
+        tags_list = []
         for tag in tags:
             if tag in tags_list:
-                raise ValidationError(
-                    {"tags": "Теги должны быть уникальными!"}
-                )
-            tags_list.add(tag)
-        return data
+                raise ValidationError({
+                    'tags': 'Теги должны быть уникальными!'
+                })
+            tags_list.append(tag)
+        return value
 
     def validate_cooking_time(self, cooking_time):
         if int(cooking_time) < MIN_COOKING_TIME:
@@ -225,9 +225,7 @@ class RecipeWriteSerializer(ModelSerializer):
         ingredients = validated_data.pop("ingredients")
         recipe = Recipe.objects.create(**validated_data)
         recipe.tags.set(tags)
-        recipe.save()
         self.create_ingredients_amounts(recipe=recipe, ingredients=ingredients)
-        recipe.save()
         return recipe
 
     def update(self, instance, validated_data):
