@@ -1,6 +1,5 @@
 from django.contrib import admin
 from django.contrib.admin import display
-from rest_framework.exceptions import ValidationError
 
 from api.constants import MIN_NUMBER
 from .models import (Favourite, Ingredient, Recipe, RecipeIngredient,

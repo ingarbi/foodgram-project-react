@@ -1,10 +1,7 @@
 from colorfield.fields import ColorField
 from django.core.validators import MaxValueValidator, MinValueValidator
-from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import UniqueConstraint
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 
 from api.constants import (HEX_LENGHT, MAX_COOKING_TIME, MAX_INGREDIENTS,
                            MAX_LENGTH, MIN_COOKING_TIME, MIN_INGREDIENTS)
@@ -113,6 +110,7 @@ class Recipe(models.Model):
     # def save(self, *args, **kwargs):
     #     self.validate_ingredients()
     #     super().save(*args, **kwargs)
+
 
 class RecipeIngredient(models.Model):
     recipe = models.ForeignKey(
