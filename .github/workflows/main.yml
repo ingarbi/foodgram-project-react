@@ -3,8 +3,8 @@ name: Main Foodgram workflow
 on:
   push:
     branches:
-      - master
-        # - main
+      # - master
+        - main
     paths-ignore:
         - '**/README.md'
 
