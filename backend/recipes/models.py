@@ -1,4 +1,7 @@
+import re
+
 from colorfield.fields import ColorField
+from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import UniqueConstraint
@@ -103,13 +106,11 @@ class Recipe(models.Model):
     def __str__(self):
         return self.name
 
-    # def validate_ingredients(self):
-    #     if self.ingredients.count() == 0:
-    #         raise ValidationError("At least one ingredient is required.")
+    def save(self, *args, **kwargs):
+        if re.match(r'^[0-9\W]+$', self.name):
+            raise ValidationError("Имя не может состоять только из цифр и букв")
 
-    # def save(self, *args, **kwargs):
-    #     self.validate_ingredients()
-    #     super().save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
 
 class RecipeIngredient(models.Model):
