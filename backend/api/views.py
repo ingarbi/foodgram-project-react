@@ -50,7 +50,7 @@ class RecipeViewSet(ModelViewSet):
         recipe_name = serializer.validated_data["name"]
         if re.match(r'^[0-9\W]+$', recipe_name):
             return Response(
-                {"errors": "Recipe name cannot contain only numbers or symbols."},
+                {"errors": "Name cannot contain only numbers or symbols."},
                 status=status.HTTP_403_FORBIDDEN
             )
         serializer.save(author=self.request.user)
