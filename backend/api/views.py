@@ -1,3 +1,4 @@
+import re
 from datetime import datetime
 
 from django.db.models import Sum
@@ -46,6 +47,12 @@ class RecipeViewSet(ModelViewSet):
     filterset_class = RecipeFilter
 
     def perform_create(self, serializer):
+        recipe_name = serializer.validated_data["name"]
+        if re.match(r'^[0-9\W]+$', recipe_name):
+            return Response(
+            {"errors": "Recipe name cannot contain only numbers or symbols."},
+            status=status.HTTP_403_FORBIDDEN
+            )
         serializer.save(author=self.request.user)
 
     def get_serializer_class(self):

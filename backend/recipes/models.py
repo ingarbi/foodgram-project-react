@@ -106,12 +106,6 @@ class Recipe(models.Model):
     def __str__(self):
         return self.name
 
-    def save(self, *args, **kwargs):
-        if re.match(r'^[0-9\W]+$', self.name):
-            raise ValidationError("Имя состоит только из цифр и букв")
-
-        super().save(*args, **kwargs)
-
 
 class RecipeIngredient(models.Model):
     recipe = models.ForeignKey(
